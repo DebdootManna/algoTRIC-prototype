@@ -1,0 +1,12 @@
+:root{
+  --teal-600: #0d9488;
+}
+body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+.btn-primary {
+  background: linear-gradient(90deg,var(--teal-600),#0ea5a1);
+  color: white; padding: .6rem 1rem; border-radius: .5rem; font-weight:600;
+}
+.btn-outline {
+  background: white; border: 1px solid #e6edf0; padding: .6rem 1rem; border-radius:.5rem;
+}
+pre { white-space: pre-wrap; word-break: break-word; }

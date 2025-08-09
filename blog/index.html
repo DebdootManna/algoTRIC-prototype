@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>algoTRIC — AI-Enhanced Cryptography (Interactive)</title>
+  <meta name="description" content="algoTRIC — interactive explainer and demos: AES+RSA hybrid and matrix-transform cipher (LU + transforms). Educational demo by Debdoot Manna." />
+  <meta name="keywords" content="crypto, AES, RSA, hybrid encryption, LU decomposition, transforms, homomorphic, post-quantum, AI" />
+  <link rel="icon" href="assets/favicon.png" />
+  <!-- Tailwind CDN (fast for prototypes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="style.css" rel="stylesheet">
+  <!-- Chart.js for comparison chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="antialiased bg-slate-50 text-slate-900">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="algoTRIC logo" width="44" height="44" />
+        <div>
+          <h1 class="text-lg font-extrabold text-teal-700">algoTRIC</h1>
+          <p class="text-xs text-slate-500 -mt-1">AI-enhanced cryptography — interactive</p>
+        </div>
+      </a>
+      <nav class="hidden md:flex gap-4 text-sm">
+        <a href="#dilemma" class="px-3 py-2 rounded hover:bg-slate-100">The Dilemma</a>
+        <a href="#ai-role" class="px-3 py-2 rounded hover:bg-slate-100">AI's Role</a>
+        <a href="#prototype" class="px-3 py-2 rounded hover:bg-slate-100">The Prototype</a>
+        <a href="#future" class="px-3 py-2 rounded hover:bg-slate-100">Future</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="max-w-6xl mx-auto px-4 py-12">
+    <section id="hero" class="text-center py-8">
+      <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">The Future of AI-Enhanced Cryptography</h2>
+      <p class="mt-4 text-slate-600 max-w-3xl mx-auto">Interactive exploration of the <em>algoTRIC</em> research. Learn the tradeoffs between symmetric and asymmetric encryption, see how AI can help, and try an interactive matrix-transform cipher demo inspired by the papers.</p>
+      <div class="mt-8 flex justify-center gap-4">
+        <a href="#dilemma" class="btn-primary">Start Exploring</a>
+        <a href="https://github.com/DebdootManna/algoTRIC-prototype" target="_blank" rel="noopener" class="btn-outline">View prototype repo</a>
+      </div>
+    </section>
+
+    <!-- THE DILEMMA -->
+    <section id="dilemma" class="mt-12">
+      <div class="grid md:grid-cols-2 gap-6">
+        <article class="p-6 bg-white rounded-lg shadow">
+          <h3 class="text-2xl font-bold">Symmetric Encryption (SE)</h3>
+          <p class="mt-2 text-slate-600">Uses a single secret key for both encryption and decryption. Fast and efficient; excellent for large data streams but requires secure key distribution.</p>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>✅ Speed and throughput</li>
+            <li>⚠️ Key exchange is the weak point</li>
+            <li>✅ Low computational cost (ideal for IoT / streaming)</li>
+          </ul>
+        </article>
+
+        <article class="p-6 bg-white rounded-lg shadow">
+          <h3 class="text-2xl font-bold">Asymmetric Encryption (AE)</h3>
+          <p class="mt-2 text-slate-600">Uses a public/private key pair. Solves key distribution with public keys, but is slower and computationally heavier — better for key exchange and signatures.</p>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>✅ Key management (no shared secret)</li>
+            <li>⚠️ Slower, best used for key exchange not bulk data</li>
+            <li>✅ Enables digital signatures and secure channels</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="mt-8 p-6 bg-white rounded-lg shadow">
+        <h4 class="text-lg font-semibold">Visualizing the trade-offs</h4>
+        <p class="text-sm text-slate-500">Hover the bars for helpful hints.</p>
+        <div class="mt-4" style="height:320px;">
+          <canvas id="tradeoffChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI ROLE -->
+    <section id="ai-role" class="mt-12 bg-teal-700 text-white rounded-lg p-8">
+      <h3 class="text-2xl font-bold text-center">AI: The Game Changer</h3>
+      <p class="text-center text-teal-100 mt-2">AI enables dynamic, adaptive cryptography — from smarter key rotation to real-time anomaly detection.</p>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-4 bg-white/10 rounded">
+          <h5 class="font-semibold">Dynamic Key Management</h5>
+          <p class="mt-2 text-sm text-teal-100">AI can choose when to rotate keys or change algorithms based on threat signals.</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded">
+          <h5 class="font-semibold">Real-time Anomaly Detection</h5>
+          <p class="mt-2 text-sm text-teal-100">Detects subtle deviations in access patterns suggesting key compromise.</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded">
+          <h5 class="font-semibold">Adaptive Encryption</h5>
+          <p class="mt-2 text-sm text-teal-100">Increase security (or optimize for speed) dynamically depending on context.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROTOTYPE & DEMOS -->
+    <section id="prototype" class="mt-12">
+      <h3 class="text-2xl font-bold">Interactive demos</h3>
+      <p class="text-slate-600 mt-2">Try the AES+RSA hybrid demo (uses Web Crypto) and the matrix-transform demo (JS implementation following the paper flow).</p>
+
+      <div class="mt-6 grid lg:grid-cols-2 gap-6">
+        <!-- AES+RSA demo -->
+        <div class="p-6 bg-white rounded-lg shadow">
+          <h4 class="font-semibold">AES + RSA (Hybrid) — In-browser demo</h4>
+          <p class="mt-2 text-sm text-slate-600">Generates keys using Web Crypto. Wraps an ephemeral AES key with RSA-OAEP and encrypts the message with AES-GCM.</p>
+
+          <label class="block mt-4 text-sm">Message (short)</label>
+          <input id="hybrid-msg" class="mt-2 w-full border rounded p-2" value="Hello algoTRIC" />
+
+          <div class="mt-4 flex gap-3">
+            <button id="generate-keys-btn" class="btn-primary">Generate RSA Keypair</button>
+            <button id="hybrid-encrypt-btn" class="btn-outline" disabled>Encrypt</button>
+            <button id="hybrid-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
+          </div>
+
+          <dl class="mt-4 text-sm">
+            <dt class="font-semibold">Public key (PEM)</dt>
+            <dd><textarea id="rsa-public-pem" class="w-full mt-1 p-2 text-xs font-mono h-20" readonly></textarea></dd>
+
+            <dt class="font-semibold mt-3">Encrypted payload (base64)</dt>
+            <dd><textarea id="hybrid-payload" class="w-full mt-1 p-2 text-xs font-mono h-28" readonly></textarea></dd>
+
+            <dt class="font-semibold mt-3">Decrypted text</dt>
+            <dd><div id="hybrid-plaintext" class="mt-1 p-2 bg-slate-50 rounded text-sm font-mono"></div></dd>
+          </dl>
+        </div>
+
+        <!-- Matrix-transform demo -->
+        <div class="p-6 bg-white rounded-lg shadow">
+          <h4 class="font-semibold">Matrix-transform cipher — interactive</h4>
+          <p class="mt-2 text-sm text-slate-600">A demo implementation of the paper flow: convert text→matrix, multiply with key matrix, LU decomposition, L⁻¹ * Const, small transform sequence, invertible output. This is an educational, reversible implementation (not intended as production crypto).</p>
+
+          <label class="block mt-4 text-sm">Plaintext (A-Z and space, short)</label>
+          <input id="matrix-msg" class="mt-2 w-full border rounded p-2" value="THE" />
+
+          <div class="mt-3 flex gap-3">
+            <button id="matrix-encrypt-btn" class="btn-primary">Encrypt (matrix)</button>
+            <button id="matrix-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
+          </div>
+
+          <div class="mt-4 text-sm">
+            <p class="font-semibold">Matrix (numeric)</p>
+            <div id="matrix-display" class="mt-2 font-mono text-sm bg-slate-50 p-3 rounded"></div>
+
+            <p class="font-semibold mt-3">Ciphertext (readable)</p>
+            <div id="matrix-ciphertext" class="mt-2 p-3 bg-black text-green-300 font-mono rounded"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUTURE -->
+    <section id="future" class="mt-12">
+      <h3 class="text-2xl font-bold">The Bigger Picture: Future Frontiers</h3>
+      <div class="mt-6 grid md:grid-cols-4 gap-4">
+        <div class="p-4 bg-slate-800 text-white rounded">Homomorphic Encryption</div>
+        <div class="p-4 bg-slate-800 text-white rounded">Post-Quantum Cryptography</div>
+        <div class="p-4 bg-slate-800 text-white rounded">Adversarial AI</div>
+        <div class="p-4 bg-slate-800 text-white rounded">Ethical Governance</div>
+      </div>
+    </section>
+
+    <footer class="mt-12 py-8 text-sm text-slate-500 text-center">
+      Interactive visualization based on the papers: "algoTRIC" and "Matrix and Transform cryptographic algorithm". For educational purposes.
+    </footer>
+  </main>
+
+  <!-- Modules + script -->
+  <script type="module" src="./js/script.js"></script>
+</body>
+</html>
