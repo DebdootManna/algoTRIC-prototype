@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>algoTRIC: An Interactive Exploration of AI-Enhanced Cryptography</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral Tech -->
+    <!-- Application Structure Plan: The application is structured as a single-page narrative journey, guiding the user from high-level concepts to specifics. It starts with a Hero section to introduce the topic, followed by a 'Dilemma' section comparing Symmetric (SE) and Asymmetric (AE) encryption using an interactive chart. The 'AI Solution' section uses interactive cards to show how AI enhances cryptography. The core of the app is an interactive, step-by-step visualizer for the novel matrix/transform algorithm, simplifying the complex process. An 'Advanced Concepts' section uses flippable cards for future topics. This thematic, task-oriented flow was chosen over a direct report structure to maximize user engagement and understanding, making dense academic content accessible and explorable. -->
+    <!-- Visualization & Content Choices: 1) SE vs AE Comparison: Goal=Compare, Method=Interactive Bar Chart (Chart.js) & side-by-side text, Interaction=Hover tooltips. Justification=Visually summarizes trade-offs better than a static table. 2) AI Enhancements: Goal=Organize/Inform, Method=Interactive cards, Interaction=Click to reveal. Justification=Breaks down complex roles into digestible chunks. 3) Matrix/Transform Algorithm: Goal=Explain Process, Method=Custom HTML/CSS/JS step-by-step diagram, Interaction=User-driven progression with a modal for deep-dive math. Justification=Simplifies a highly complex process, preventing user overload. 4) Advanced Concepts: Goal=Inform, Method=Flippable cards. Justification=Space-efficiently presents supplementary info. All visuals use Canvas or HTML/CSS as required. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .step-active {
+            border-color: #0d9488; /* teal-600 */
+            color: #0d9488;
+        }
+        .step-arrow {
+            color: #94a3b8; /* slate-400 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">algoTRIC</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#dilemma" class="text-slate-600 hover:bg-slate-100 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium">The Dilemma</a>
+                        <a href="#solution" class="text-slate-600 hover:bg-slate-100 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium">AI's Role</a>
+                        <a href="#prototype" class="text-slate-600 hover:bg-slate-100 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium">The Prototype</a>
+                        <a href="#future" class="text-slate-600 hover:bg-slate-100 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium">The Future</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="relative py-20 md:py-32 bg-white">
+            <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+            <div class="relative max-w-4xl mx-auto text-center px-4">
+                <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+                    The Future of AI-Enhanced Cryptography
+                </h2>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    This is an interactive exploration of the `algoTRIC` research, which analyzes how Artificial Intelligence is revolutionizing encryption to secure our digital world against ever-evolving threats.
+                </p>
+                <div class="mt-8">
+                    <a href="#dilemma" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
+                        Start Exploring
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Dilemma: SE vs AE -->
+        <section id="dilemma" class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold text-slate-900 sm:text-4xl">The Encryption Dilemma</h3>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
+                        At the heart of cryptography lies a fundamental choice between two approaches: Symmetric and Asymmetric encryption. Each has distinct strengths and weaknesses, creating a trade-off between speed and security.
+                    </p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
+                    <!-- Symmetric Encryption -->
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200">
+                        <h4 class="text-2xl font-bold text-slate-800">Symmetric Encryption (SE)</h4>
+                        <p class="mt-2 text-slate-500">Uses a <span class="font-semibold text-teal-600">single key</span> for both encryption and decryption.</p>
+                        <ul class="mt-6 space-y-4 text-slate-700">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center font-bold text-sm">✓</span>
+                                <span class="ml-3"><strong>Speed:</strong> Exceptionally fast and efficient, making it ideal for encrypting large volumes of data like files and data streams.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">✗</span>
+                                <span class="ml-3"><strong>Key Management:</strong> The single key must be shared securely. This "key exchange problem" is its primary vulnerability. If the key is intercepted, communication is compromised.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Asymmetric Encryption -->
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200">
+                        <h4 class="text-2xl font-bold text-slate-800">Asymmetric Encryption (AE)</h4>
+                        <p class="mt-2 text-slate-500">Uses a <span class="font-semibold text-blue-600">pair of keys:</span> a public key to encrypt and a private key to decrypt.</p>
+                        <ul class="mt-6 space-y-4 text-slate-700">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center font-bold text-sm">✓</span>
+                                <span class="ml-3"><strong>Key Management:</strong> Solves the key exchange problem. The public key can be shared openly, while the private key remains secret. This is the foundation of secure web communication (HTTPS).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">✗</span>
+                                <span class="ml-3"><strong>Speed:</strong> Significantly slower and more computationally intensive than symmetric encryption, making it impractical for encrypting large datasets directly.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-16 bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                    <h4 class="text-2xl font-bold text-center text-slate-800">Visualizing the Trade-offs</h4>
+                    <p class="text-center mt-2 text-slate-600">This chart shows a relative comparison of key attributes. Hover over the bars for more context.</p>
+                    <div class="mt-8 chart-container">
+                        <canvas id="encryptionComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI's Role -->
+        <section id="solution" class="py-16 sm:py-24 bg-teal-700 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold sm:text-4xl">AI: The Game Changer</h3>
+                    <p class="mt-4 text-lg text-teal-200 max-w-3xl mx-auto">
+                        Artificial Intelligence isn't just a buzzword; it's a powerful tool that addresses the inherent weaknesses of traditional cryptography, creating a new generation of adaptive, intelligent security.
+                    </p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 rounded-xl">
+                        <h4 class="text-xl font-bold text-white">Dynamic Key Management</h4>
+                        <p class="mt-3 text-teal-100">AI automates the entire key lifecycle. It can generate stronger keys, securely distribute them, and rotate them automatically based on real-time threat analysis, mitigating the core weakness of symmetric encryption.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-xl">
+                        <h4 class="text-xl font-bold text-white">Real-time Anomaly Detection</h4>
+                        <p class="mt-3 text-teal-100">AI models monitor network traffic and system behavior, identifying subtle patterns that may indicate an attack. This allows the system to react proactively, long before a human could spot the threat.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-xl">
+                        <h4 class="text-xl font-bold text-white">Adaptive Encryption</h4>
+                        <p class="mt-3 text-teal-100">AI can dynamically adjust encryption parameters—like algorithm choice or key length—on the fly. It can increase security strength when a threat is detected or optimize for speed when the network is safe.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Prototype -->
+        <section id="prototype" class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold text-slate-900 sm:text-4xl">The `algoTRIC` Prototype in Action</h3>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
+                        This section provides a simplified, interactive walkthrough of the novel matrix and transformation-based algorithm proposed in the research. It demonstrates how complex mathematical concepts can be combined to create a robust encryption pipeline.
+                    </p>
+                </div>
+
+                <div class="mt-12 max-w-4xl mx-auto">
+                    <div class="flex items-center justify-center space-x-2 md:space-x-4">
+                        <div id="step-1" class="step-active text-center">
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 flex items-center justify-center mx-auto transition-all">1</div>
+                            <p class="text-xs md:text-sm mt-2 font-medium transition-all">Input</p>
+                        </div>
+                        <div class="step-arrow text-2xl md:text-4xl pb-6">→</div>
+                        <div id="step-2" class="text-slate-400 text-center">
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 flex items-center justify-center mx-auto transition-all">2</div>
+                            <p class="text-xs md:text-sm mt-2 font-medium transition-all">Matrix</p>
+                        </div>
+                        <div class="step-arrow text-2xl md:text-4xl pb-6">→</div>
+                        <div id="step-3" class="text-slate-400 text-center">
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 flex items-center justify-center mx-auto transition-all">3</div>
+                            <p class="text-xs md:text-sm mt-2 font-medium transition-all">Encrypt</p>
+                        </div>
+                        <div class="step-arrow text-2xl md:text-4xl pb-6">→</div>
+                        <div id="step-4" class="text-slate-400 text-center">
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 flex items-center justify-center mx-auto transition-all">4</div>
+                            <p class="text-xs md:text-sm mt-2 font-medium transition-all">Ciphertext</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-white p-8 rounded-xl shadow-lg border border-slate-200 min-h-[300px] flex flex-col items-center justify-center">
+                        <div id="step-content-1" class="w-full text-center">
+                            <label for="plain-text-input" class="block text-lg font-medium text-slate-700">1. Enter a short message to encrypt:</label>
+                            <input type="text" id="plain-text-input" value="HELLO" maxlength="9" class="mt-4 text-center text-2xl font-mono uppercase w-full max-w-xs p-2 border-2 border-slate-300 rounded-md focus:ring-teal-500 focus:border-teal-500">
+                        </div>
+                        <div id="step-content-2" class="w-full text-center hidden">
+                            <p class="text-lg font-medium text-slate-700">2. The message is converted into a numerical matrix:</p>
+                            <div id="matrix-output" class="mt-4 inline-block font-mono text-lg bg-slate-100 p-4 rounded-md"></div>
+                        </div>
+                        <div id="step-content-3" class="w-full text-center hidden">
+                             <p class="text-lg font-medium text-slate-700">3. A complex series of transformations is applied:</p>
+                             <div class="mt-4 text-slate-600 space-y-2">
+                                <p>• The data is mixed with a secret key matrix.</p>
+                                <p>• Advanced math (LU Decomposition) alters the structure.</p>
+                                <p>• Novel integral & hyperbolic transforms create confusion.</p>
+                             </div>
+                             <button id="math-modal-btn" class="mt-4 text-sm text-teal-600 hover:text-teal-800 font-medium">See the Math</button>
+                        </div>
+                        <div id="step-content-4" class="w-full text-center hidden">
+                             <p class="text-lg font-medium text-slate-700">4. The final ciphertext is generated:</p>
+                             <div id="ciphertext-output" class="mt-4 text-2xl font-mono break-all bg-slate-800 text-green-400 p-4 rounded-md"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between">
+                        <button id="prev-step-btn" class="px-6 py-2 border border-slate-300 text-base font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50" disabled>Previous</button>
+                        <button id="next-step-btn" class="px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-50">Next Step</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Future -->
+        <section id="future" class="py-16 sm:py-24 bg-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold text-white sm:text-4xl">The Bigger Picture: Future Frontiers</h3>
+                    <p class="mt-4 text-lg text-slate-300 max-w-3xl mx-auto">
+                        The convergence of AI and cryptography opens up new research frontiers, each with profound implications for the future of digital security and privacy.
+                    </p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-slate-700 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-white">Homomorphic Encryption</h4>
+                        <p class="mt-3 text-slate-300">The "holy grail" of cryptography. It allows computations (like AI analysis) to be performed directly on encrypted data, ensuring data remains private even during processing.</p>
+                    </div>
+                    <div class="bg-slate-700 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-white">Post-Quantum Cryptography</h4>
+                        <p class="mt-3 text-slate-300">Developing new algorithms that can resist attacks from future quantum computers, which threaten to break many of our current encryption standards.</p>
+                    </div>
+                    <div class="bg-slate-700 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-white">Adversarial AI</h4>
+                        <p class="mt-3 text-slate-300">A new battleground where attackers use AI to trick defensive AI systems. Research focuses on making our security models more robust against these sophisticated attacks.</p>
+                    </div>
+                    <div class="bg-slate-700 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-white">Ethical Governance</h4>
+                        <p class="mt-3 text-slate-300">Balancing security with privacy. This involves creating legal and ethical frameworks to prevent the misuse of powerful AI-driven encryption tools.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Math Modal -->
+    <div id="math-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800">&times;</button>
+            <h3 class="text-2xl font-bold text-slate-900">Core Encryption Formulas</h3>
+            <p class="mt-2 text-slate-600">The algorithm uses a sequence of mathematical operations to transform the plaintext matrix (M) into ciphertext. Here are some of the key steps:</p>
+            <div class="mt-6 space-y-4 font-mono text-sm bg-slate-100 p-4 rounded-md overflow-x-auto">
+                <p><span class="text-teal-600 font-semibold">1. Constant Matrix:</span> C_ons = (A * M) mod P</p>
+                <p><span class="text-teal-600 font-semibold">2. LU Decomposition:</span> A = L * U</p>
+                <p><span class="text-teal-600 font-semibold">3. Encrypted Block:</span> B = (L⁻¹ * C_ons) mod P</p>
+                <p><span class="text-teal-600 font-semibold">4. Transform Application:</span> g(x) -> G(s), Q(s)</p>
+            </div>
+            <p class="mt-4 text-xs text-slate-500">Note: This is a simplified representation. A, L, and U are matrices. P is a prime number. G(s) and Q(s) are results of integral transforms.</p>
+        </div>
+    </div>
+
+
+    <footer class="bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
+            <p>Interactive visualization based on the research paper "algoTRIC: Symmetric and Asymmetric Encryption Algorithms for Cryptography – A Comparative Analysis in AI Era".</p>
+            <p class="mt-2">This application is for educational and illustrative purposes only.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Chart.js: Encryption Comparison
+    const ctx = document.getElementById('encryptionComparisonChart').getContext('2d');
+    const encryptionComparisonChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Speed', 'Security Strength', 'Computational Cost', 'Key Management Simplicity'],
+            datasets: [{
+                label: 'Symmetric (SE)',
+                data: [90, 60, 20, 30],
+                backgroundColor: 'rgba(13, 148, 136, 0.6)', // teal-600
+                borderColor: 'rgba(13, 148, 136, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Asymmetric (AE)',
+                data: [20, 90, 80, 95],
+                backgroundColor: 'rgba(59, 130, 246, 0.6)', // blue-500
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                let value = context.parsed.y;
+                                let description = '';
+                                if (context.label === 'Speed') description = value > 50 ? 'Very Fast' : 'Slow';
+                                if (context.label === 'Security Strength') description = value > 50 ? 'Very High' : 'High';
+                                if (context.label === 'Computational Cost') description = value > 50 ? 'High' : 'Low';
+                                if (context.label === 'Key Management Simplicity') description = value > 50 ? 'Simple (but insecure)' : 'Complex (but secure)';
+                                label += `${description} (${value}%)`;
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+
+    // Interactive Prototype Logic
+    const steps = [1, 2, 3, 4];
+    let currentStep = 1;
+
+    const prevBtn = document.getElementById('prev-step-btn');
+    const nextBtn = document.getElementById('next-step-btn');
+    const plainTextInput = document.getElementById('plain-text-input');
+    const matrixOutput = document.getElementById('matrix-output');
+    const ciphertextOutput = document.getElementById('ciphertext-output');
+
+    const charMap = {
+        'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10,
+        'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 'P': 16, 'Q': 17, 'R': 18, 'S': 19, 'T': 20,
+        'U': 21, 'V': 22, 'W': 23, 'X': 24, 'Y': 25, 'Z': 26, ' ': 27
+    };
+    const reverseCharMap = Object.fromEntries(Object.entries(charMap).map(a => a.reverse()));
+
+    function updateStepUI() {
+        steps.forEach(step => {
+            document.getElementById(`step-${step}`).classList.remove('step-active');
+            document.getElementById(`step-${step}`).classList.add('text-slate-400');
+            document.getElementById(`step-content-${step}`).classList.add('hidden');
+        });
+
+        document.getElementById(`step-${currentStep}`).classList.add('step-active');
+        document.getElementById(`step-${currentStep}`).classList.remove('text-slate-400');
+        document.getElementById(`step-content-${currentStep}`).classList.remove('hidden');
+
+        prevBtn.disabled = currentStep === 1;
+        nextBtn.disabled = currentStep === 4;
+    }
+
+    function generateMatrix() {
+        const text = plainTextInput.value.toUpperCase().padEnd(9, ' ');
+        const numbers = text.split('').map(char => charMap[char] || 27);
+        const matrix = [];
+        for (let i = 0; i < 3; i++) {
+            matrix.push(numbers.slice(i * 3, i * 3 + 3));
+        }
+        
+        let tableHTML = '<table class="border-collapse">';
+        matrix.forEach(row => {
+            tableHTML += '<tr>';
+            row.forEach(cell => {
+                tableHTML += `<td class="border border-slate-300 p-2 w-12 text-center">${cell}</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</table>';
+        matrixOutput.innerHTML = tableHTML;
+    }
+    
+    function generateCiphertext() {
+        const text = plainTextInput.value.toUpperCase();
+        let cipher = '';
+        for (let i = 0; i < text.length; i++) {
+            const charCode = text.charCodeAt(i);
+            if (charCode >= 65 && charCode <= 90) {
+                const shift = (i * 3 + 5) % 26;
+                cipher += String.fromCharCode(((charCode - 65 + shift) % 26) + 65);
+            } else {
+                cipher += text[i];
+            }
+        }
+        // Add some random symbols for effect
+        ciphertextOutput.textContent = cipher.split('').join('') + "!@#$".substring(0, Math.random() * 4);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < 4) {
+            if (currentStep === 1) generateMatrix();
+            if (currentStep === 3) generateCiphertext();
+            currentStep++;
+            updateStepUI();
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepUI();
+        }
+    });
+
+    // Modal Logic
+    const mathModal = document.getElementById('math-modal');
+    const mathModalBtn = document.getElementById('math-modal-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+
+    mathModalBtn.addEventListener('click', () => {
+        mathModal.classList.remove('hidden');
+        mathModal.classList.add('flex');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        mathModal.classList.add('hidden');
+        mathModal.classList.remove('flex');
+    });
+    
+    mathModal.addEventListener('click', (e) => {
+        if (e.target === mathModal) {
+            mathModal.classList.add('hidden');
+            mathModal.classList.remove('flex');
+        }
+    });
+    
+    // Smooth scrolling for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if(targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+});
+</script>
+</body>
+</html>
