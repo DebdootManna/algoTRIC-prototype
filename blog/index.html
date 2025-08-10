@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>algoTRIC — Research Blog + Interactive Demos</title>
+  <title>algoTRIC — Research Blog + Interactive Demos (fixed)</title>
   <meta name="description" content="algoTRIC research: matrix-transform cryptography + AES/RSA hybrid prototypes and live browser benchmarks."/>
   <link rel="icon" href="assets/favicon.png" onerror="this.style.display='none'"/>
   <!-- Tailwind CDN (fast prototype) -->
@@ -467,10 +467,27 @@ function decryptMatrixPackage(pkg){
   for(let col=0; col<n; col++){
     const rhs = Cons.map(r => r[col]);
     const sol = solveLinearMod(A, rhs, P);
-    for(let row=0; row<n; row++) M[row][col] = ((sol[row]%P)+P)%P;
+    for(let row=0;row<n;row++) M[row][col] = ((sol[row]%P)+P)%P;
   }
   const plaintext = matrixToText(M);
   return {matrix: M, plaintext};
+}
+
+/* ----------------------
+   Random chunk helper (fix for quota error)
+   ---------------------- */
+function getRandomBytes(size) {
+  // Browsers limit crypto.getRandomValues() to 65536 bytes per call.
+  const MAX = 65536;
+  const out = new Uint8Array(size);
+  let offset = 0;
+  while (offset < size) {
+    const chunkSize = Math.min(MAX, size - offset);
+    const view = out.subarray(offset, offset + chunkSize);
+    crypto.getRandomValues(view);
+    offset += chunkSize;
+  }
+  return out;
 }
 
 /* ----------------------
@@ -533,10 +550,11 @@ async function runBenchmark(sizes=[1024,10240,102400], iters=3, onPartial=null){
       if (benchStopRequested) break;
       // yield a tick to keep UI responsive
       await new Promise(r => setTimeout(r, 8));
-      const payload = crypto.getRandomValues(new Uint8Array(s));
+      // generate payload in CHUNKS to avoid getRandomValues quota
+      const payload = getRandomBytes(s);
+
       // AES-only
       const t0 = performance.now();
-      // AES roundtrip: ephemeral key encrypt & decrypt
       const aesKey = await generateAesKey();
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, aesKey, payload);
@@ -546,13 +564,11 @@ async function runBenchmark(sizes=[1024,10240,102400], iters=3, onPartial=null){
 
       // Hybrid
       const th0 = performance.now();
-      // AES encrypt + encrypt raw key with RSA
       const aesKey2 = await generateAesKey();
       const iv2 = crypto.getRandomValues(new Uint8Array(12));
       const ct2 = await crypto.subtle.encrypt({name:'AES-GCM', iv:iv2}, aesKey2, payload);
       const raw = await exportRawAesKey(aesKey2);
       const wrapped = await crypto.subtle.encrypt({name:'RSA-OAEP'}, pub, raw);
-      // unwrap -> decrypt
       const rawUn = await crypto.subtle.decrypt({name:'RSA-OAEP'}, priv, wrapped);
       const aesKey3 = await importRawAesKey(rawUn);
       await crypto.subtle.decrypt({name:'AES-GCM', iv:iv2}, aesKey3, ct2);
