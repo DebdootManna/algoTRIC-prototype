@@ -1,6 +1,4 @@
-// AES helpers using Web Crypto. Exports hybrid helpers that wrap AES key with a provided RSA public key.
-// This simplifies the hybrid pipeline for demo. In production, more robust packaging + format needed.
-
+// AES helpers and hybrid pipeline using Web Crypto
 export async function generateAesKey() {
   return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
@@ -17,22 +15,21 @@ export async function aesDecrypt(key, iv, ct) {
   return new TextDecoder().decode(dec);
 }
 
-// export raw key bytes for wrapping
 export async function exportRawAesKey(key) {
-  return crypto.subtle.exportKey('raw', key); // ArrayBuffer
+  return crypto.subtle.exportKey('raw', key);
 }
-
 export async function importRawAesKey(raw) {
   return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, true, ['encrypt', 'decrypt']);
 }
 
-// Hybrid: wrap AES key with RSA public key (CryptoKey) using RSA-OAEP
-export async function hybridEncryptWithRSA(rsaPublicKeyCryptoKey, plainText) {
+// Hybrid helpers: wrap AES key with RSA publicKeyCryptoKey using RSA-OAEP (WebCrypto)
+export async function hybridEncryptWithRSA(rsaPublicCryptoKey, plainText) {
   const aesKey = await generateAesKey();
   const { iv, ct } = await aesEncrypt(aesKey, plainText);
   const rawAes = await exportRawAesKey(aesKey); // ArrayBuffer
-  const wrappedKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, rsaPublicKeyCryptoKey, rawAes);
-  // Build simple payload: [wrappedKeyLen(4 bytes)] [wrappedKey] [iv(12)] [ct]
+  // wrap using RSA-OAEP: WebCrypto doesn't have wrapKey with RSA-OAEP consistently; using encrypt raw bytes
+  const wrappedKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, rsaPublicCryptoKey, rawAes);
+  // package: [4 bytes length][wrappedKey][12 bytes iv][ciphertext]
   const wrappedKeyLen = wrappedKey.byteLength;
   const header = new Uint8Array(4);
   new DataView(header.buffer).setUint32(0, wrappedKeyLen, false);
@@ -40,21 +37,21 @@ export async function hybridEncryptWithRSA(rsaPublicKeyCryptoKey, plainText) {
   return concatArrayBuffers(...parts);
 }
 
-export async function hybridDecryptWithRSA(rsaPrivateKeyCryptoKey, payloadBuffer) {
+export async function hybridDecryptWithRSA(rsaPrivateCryptoKey, payloadBuffer) {
   const view = new DataView(payloadBuffer);
   const wrappedKeyLen = view.getUint32(0, false);
   let offset = 4;
   const wrappedKey = payloadBuffer.slice(offset, offset + wrappedKeyLen); offset += wrappedKeyLen;
   const iv = payloadBuffer.slice(offset, offset + 12); offset += 12;
   const ct = payloadBuffer.slice(offset);
-  // unwrap
-  const rawAes = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaPrivateKeyCryptoKey, wrappedKey);
+  // unwrap raw AES key
+  const rawAes = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaPrivateCryptoKey, wrappedKey);
   const aesKey = await importRawAesKey(rawAes);
   const plain = await aesDecrypt(aesKey, new Uint8Array(iv), ct);
   return plain;
 }
 
-// helpers
+// helper
 function concatArrayBuffers(...bufs) {
   const total = bufs.reduce((s, b) => s + b.byteLength, 0);
   const out = new Uint8Array(total);

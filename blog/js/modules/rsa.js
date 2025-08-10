@@ -1,6 +1,4 @@
-// RSA key generation & PEM import/export helpers using WebCrypto
-// Produces 2048-bit RSA-OAEP keys, exported as PEM for display.
-
+// RSA helpers: generate PEM, import/export, base64 helpers
 const RSA_ALGO = { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01,0x00,0x01]), hash: 'SHA-256' };
 
 export async function generateKeypairCryptoKey() {
@@ -26,7 +24,6 @@ export async function exportPrivateKeyToPem(key) {
   return `-----BEGIN PRIVATE KEY-----\n${formatPem(b64)}\n-----END PRIVATE KEY-----`;
 }
 
-// import helpers (from PEM string)
 export async function importPublicKeyFromPem(pem) {
   const b64 = pemToBase64(pem);
   const spki = base64ToArrayBuffer(b64);
@@ -46,18 +43,17 @@ function formatPem(b64) {
 function pemToBase64(pem) {
   return pem.replace(/-----(BEGIN|END) (PUBLIC|PRIVATE) KEY-----/g, '').replace(/\s+/g, '');
 }
-function arrayBufferToBase64(buffer) {
+export function arrayBufferToBase64(buffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
   for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
   return btoa(binary);
 }
-function base64ToArrayBuffer(b64) {
+export function base64ToArrayBuffer(b64) {
   const bin = atob(b64);
   const len = bin.length;
   const arr = new Uint8Array(len);
   for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
   return arr.buffer;
 }
-export { arrayBufferToBase64, base64ToArrayBuffer };

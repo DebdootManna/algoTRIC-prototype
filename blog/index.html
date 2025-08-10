@@ -1,176 +1,714 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>algoTRIC — AI-Enhanced Cryptography (Interactive)</title>
-  <meta name="description" content="algoTRIC — interactive explainer and demos: AES+RSA hybrid and matrix-transform cipher (LU + transforms). Educational demo by Debdoot Manna." />
-  <meta name="keywords" content="crypto, AES, RSA, hybrid encryption, LU decomposition, transforms, homomorphic, post-quantum, AI" />
-  <link rel="icon" href="assets/favicon.png" />
-  <!-- Tailwind CDN (fast for prototypes) -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>algoTRIC — Research Blog + Interactive Demos</title>
+  <meta name="description" content="algoTRIC research: matrix-transform cryptography + AES/RSA hybrid prototypes and live browser benchmarks."/>
+  <link rel="icon" href="assets/favicon.png" onerror="this.style.display='none'"/>
+  <!-- Tailwind CDN (fast prototype) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="style.css" rel="stylesheet">
-  <!-- Chart.js for comparison chart -->
+  <!-- Chart.js for graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--teal:#0d9488}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:#f8fafc;color:#0f172a}
+    .btn-primary{background:linear-gradient(90deg,var(--teal),#0ea5a1);color:#fff;padding:.6rem 1rem;border-radius:.5rem;font-weight:600}
+    .btn-outline{background:#fff;border:1px solid #e6edf0;padding:.5rem .8rem;border-radius:.5rem}
+    .card{background:#fff;padding:1.25rem;border-radius:.75rem;box-shadow:0 1px 2px rgba(2,6,23,.06);border:1px solid #eef2f7}
+    pre{white-space:pre-wrap;word-break:break-word}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Helvetica Neue", monospace}
+    .chart-wrap{height:220px}
+    @media (min-width:768px){ .chart-wrap{height:260px} }
+  </style>
 </head>
-<body class="antialiased bg-slate-50 text-slate-900">
+<body>
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
-        <img src="assets/logo.svg" alt="algoTRIC logo" width="44" height="44" />
-        <div>
-          <h1 class="text-lg font-extrabold text-teal-700">algoTRIC</h1>
-          <p class="text-xs text-slate-500 -mt-1">AI-enhanced cryptography — interactive</p>
-        </div>
-      </a>
-      <nav class="hidden md:flex gap-4 text-sm">
-        <a href="#dilemma" class="px-3 py-2 rounded hover:bg-slate-100">The Dilemma</a>
-        <a href="#ai-role" class="px-3 py-2 rounded hover:bg-slate-100">AI's Role</a>
-        <a href="#prototype" class="px-3 py-2 rounded hover:bg-slate-100">The Prototype</a>
-        <a href="#future" class="px-3 py-2 rounded hover:bg-slate-100">Future</a>
-      </nav>
+<header class="bg-white sticky top-0 z-40 border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="assets/logo.svg" alt="algoTRIC logo" width="44" height="44" onerror="this.style.display='none'"/>
+      <div>
+        <div class="text-teal-600 font-extrabold">algoTRIC</div>
+        <div class="text-xs text-slate-500 -mt-0.5">AI-enhanced cryptography — interactive</div>
+      </div>
     </div>
-  </header>
+    <nav class="hidden md:flex gap-6 text-sm text-slate-600">
+      <a href="#intro" class="hover:underline">Intro</a>
+      <a href="#prototype" class="hover:underline">Prototype</a>
+      <a href="#demos" class="hover:underline">Demos</a>
+      <a href="#bench" class="hover:underline">Benchmarks</a>
+      <a href="#future" class="hover:underline">Future</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-10 space-y-10">
 
   <!-- HERO -->
-  <main class="max-w-6xl mx-auto px-4 py-12">
-    <section id="hero" class="text-center py-8">
-      <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">The Future of AI-Enhanced Cryptography</h2>
-      <p class="mt-4 text-slate-600 max-w-3xl mx-auto">Interactive exploration of the <em>algoTRIC</em> research. Learn the tradeoffs between symmetric and asymmetric encryption, see how AI can help, and try an interactive matrix-transform cipher demo inspired by the papers.</p>
-      <div class="mt-8 flex justify-center gap-4">
-        <a href="#dilemma" class="btn-primary">Start Exploring</a>
-        <a href="https://github.com/DebdootManna/algoTRIC-prototype" target="_blank" rel="noopener" class="btn-outline">View prototype repo</a>
+  <section id="intro" class="text-center">
+    <h1 class="text-4xl md:text-5xl font-extrabold">algoTRIC — AI-aware cryptography research & prototype</h1>
+    <p class="mt-4 text-slate-600 max-w-3xl mx-auto">This page documents the <strong>algoTRIC</strong> research (matrix/transform cryptography & symmetric/asymmetric comparisons), explains the GitHub prototype you built, and provides interactive demos & live browser benchmarks so readers can reproduce and explore behavior.</p>
+    <div class="mt-6 flex justify-center gap-4">
+      <a class="btn-primary" href="#prototype">Read the Prototype</a>
+      <a class="btn-outline" href="https://github.com/DebdootManna/algoTRIC-prototype" target="_blank" rel="noopener">Open GitHub repo</a>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <section id="problem" class="card">
+    <h2 class="text-2xl font-bold">The Encryption Dilemma (SE vs AE) — TL;DR</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold">Symmetric Encryption (SE)</h3>
+        <p class="text-slate-600 mt-1">Single shared key — extremely fast (AES), good for bulk data, but key distribution is a critical vulnerability.</p>
+        <ul class="mt-2 text-sm text-slate-700">
+          <li>• Speed & throughput: excellent</li>
+          <li>• Key management: hard in distributed systems</li>
+          <li>• Use-cases: encrypted storage, streaming, IoT</li>
+        </ul>
       </div>
-    </section>
-
-    <!-- THE DILEMMA -->
-    <section id="dilemma" class="mt-12">
-      <div class="grid md:grid-cols-2 gap-6">
-        <article class="p-6 bg-white rounded-lg shadow">
-          <h3 class="text-2xl font-bold">Symmetric Encryption (SE)</h3>
-          <p class="mt-2 text-slate-600">Uses a single secret key for both encryption and decryption. Fast and efficient; excellent for large data streams but requires secure key distribution.</p>
-          <ul class="mt-4 space-y-2 text-sm">
-            <li>✅ Speed and throughput</li>
-            <li>⚠️ Key exchange is the weak point</li>
-            <li>✅ Low computational cost (ideal for IoT / streaming)</li>
-          </ul>
-        </article>
-
-        <article class="p-6 bg-white rounded-lg shadow">
-          <h3 class="text-2xl font-bold">Asymmetric Encryption (AE)</h3>
-          <p class="mt-2 text-slate-600">Uses a public/private key pair. Solves key distribution with public keys, but is slower and computationally heavier — better for key exchange and signatures.</p>
-          <ul class="mt-4 space-y-2 text-sm">
-            <li>✅ Key management (no shared secret)</li>
-            <li>⚠️ Slower, best used for key exchange not bulk data</li>
-            <li>✅ Enables digital signatures and secure channels</li>
-          </ul>
-        </article>
+      <div>
+        <h3 class="font-semibold">Asymmetric Encryption (AE)</h3>
+        <p class="text-slate-600 mt-1">Public/private key pairs — resolves key exchange but costs CPU/time (RSA/ECC). Excellent for small payloads, signatures, key wrapping.</p>
+        <ul class="mt-2 text-sm text-slate-700">
+          <li>• Key distribution: solved via public keys</li>
+          <li>• Performance: heavier (use for key exchange)</li>
+          <li>• Use-cases: TLS handshakes, signatures</li>
+        </ul>
       </div>
+    </div>
+  </section>
 
-      <div class="mt-8 p-6 bg-white rounded-lg shadow">
-        <h4 class="text-lg font-semibold">Visualizing the trade-offs</h4>
-        <p class="text-sm text-slate-500">Hover the bars for helpful hints.</p>
-        <div class="mt-4" style="height:320px;">
-          <canvas id="tradeoffChart"></canvas>
-        </div>
-      </div>
-    </section>
+  <!-- THE PROTOTYPE (GitHub explanation) -->
+  <section id="prototype" class="card">
+    <h2 class="text-2xl font-bold">Your GitHub Prototype — what it implements</h2>
+    <p class="text-slate-600 mt-2">Summary and mapping from your repo to this demo implementation:</p>
+    <ol class="list-decimal ml-6 mt-3 space-y-2 text-sm text-slate-700">
+      <li><strong>Hybrid AES+RSA pipeline</strong>: generate an ephemeral AES-GCM key to encrypt payload; wrap (encrypt) AES key with RSA-OAEP public key. This is implemented with the Web Crypto API here for reproducibility.</li>
+      <li><strong>Matrix & transform algorithm</strong>: converts plaintext → numeric matrix, multiplies by a key matrix A mod p (Cons = A*M mod p), performs LU-like decomposition and L⁻¹ * Cons as intermediary, then applies reversible polynomial-style transforms to emulate the Gupta/Abaoub steps. This matches the structure of the paper while keeping the demo reversible and fast in-browser.</li>
+      <li><strong>Benchmarks</strong>: the page runs browser-side benchmarks to compare AES-only roundtrip times vs the hybrid pipeline. Because the browser can't read true CPU% or OS RSS reliably, the script uses wall-clock timings and `performance.memory` when available as proxies for resource trends.</li>
+    </ol>
 
-    <!-- AI ROLE -->
-    <section id="ai-role" class="mt-12 bg-teal-700 text-white rounded-lg p-8">
-      <h3 class="text-2xl font-bold text-center">AI: The Game Changer</h3>
-      <p class="text-center text-teal-100 mt-2">AI enables dynamic, adaptive cryptography — from smarter key rotation to real-time anomaly detection.</p>
-      <div class="mt-6 grid md:grid-cols-3 gap-6">
-        <div class="p-4 bg-white/10 rounded">
-          <h5 class="font-semibold">Dynamic Key Management</h5>
-          <p class="mt-2 text-sm text-teal-100">AI can choose when to rotate keys or change algorithms based on threat signals.</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded">
-          <h5 class="font-semibold">Real-time Anomaly Detection</h5>
-          <p class="mt-2 text-sm text-teal-100">Detects subtle deviations in access patterns suggesting key compromise.</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded">
-          <h5 class="font-semibold">Adaptive Encryption</h5>
-          <p class="mt-2 text-sm text-teal-100">Increase security (or optimize for speed) dynamically depending on context.</p>
-        </div>
-      </div>
-    </section>
+    <h3 class="mt-4 font-semibold">Reproducibility & security notes</h3>
+    <p class="text-sm text-slate-600">The demo is educational — do not use the matrix transform as production crypto. The AES+RSA demo uses Web Crypto primitives correctly but a production system should use standard formats and robust key management.</p>
+  </section>
 
-    <!-- PROTOTYPE & DEMOS -->
-    <section id="prototype" class="mt-12">
-      <h3 class="text-2xl font-bold">Interactive demos</h3>
-      <p class="text-slate-600 mt-2">Try the AES+RSA hybrid demo (uses Web Crypto) and the matrix-transform demo (JS implementation following the paper flow).</p>
+  <!-- DEMOS -->
+  <section id="demos" class="space-y-6">
+    <h2 class="text-2xl font-bold">Interactive demos</h2>
+    <p class="text-slate-600">Below are two demos — AES+RSA (hybrid) and the matrix-transform educational pipeline.</p>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <!-- AES+RSA -->
+      <div class="card">
+        <h3 class="font-semibold">AES + RSA (Hybrid) — In-browser demo</h3>
+        <p class="text-sm text-slate-600 mt-1">Generates RSA-OAEP (2048) keys and performs AES-GCM + RSA wrapper operations using Web Crypto.</p>
 
-      <div class="mt-6 grid lg:grid-cols-2 gap-6">
-        <!-- AES+RSA demo -->
-        <div class="p-6 bg-white rounded-lg shadow">
-          <h4 class="font-semibold">AES + RSA (Hybrid) — In-browser demo</h4>
-          <p class="mt-2 text-sm text-slate-600">Generates keys using Web Crypto. Wraps an ephemeral AES key with RSA-OAEP and encrypts the message with AES-GCM.</p>
+        <label class="mt-4 block text-sm">Message</label>
+        <input id="hybrid-msg" class="w-full mt-2 border rounded p-2" value="Hello algoTRIC — Debdoot" />
 
-          <label class="block mt-4 text-sm">Message (short)</label>
-          <input id="hybrid-msg" class="mt-2 w-full border rounded p-2" value="Hello algoTRIC" />
-
-          <div class="mt-4 flex gap-3">
-            <button id="generate-keys-btn" class="btn-primary">Generate RSA Keypair</button>
-            <button id="hybrid-encrypt-btn" class="btn-outline" disabled>Encrypt</button>
-            <button id="hybrid-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
-          </div>
-
-          <dl class="mt-4 text-sm">
-            <dt class="font-semibold">Public key (PEM)</dt>
-            <dd><textarea id="rsa-public-pem" class="w-full mt-1 p-2 text-xs font-mono h-20" readonly></textarea></dd>
-
-            <dt class="font-semibold mt-3">Encrypted payload (base64)</dt>
-            <dd><textarea id="hybrid-payload" class="w-full mt-1 p-2 text-xs font-mono h-28" readonly></textarea></dd>
-
-            <dt class="font-semibold mt-3">Decrypted text</dt>
-            <dd><div id="hybrid-plaintext" class="mt-1 p-2 bg-slate-50 rounded text-sm font-mono"></div></dd>
-          </dl>
+        <div class="mt-4 flex gap-3">
+          <button id="generate-keys-btn" class="btn-primary">Generate RSA keypair</button>
+          <button id="hybrid-encrypt-btn" class="btn-outline" disabled>Encrypt</button>
+          <button id="hybrid-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
         </div>
 
-        <!-- Matrix-transform demo -->
-        <div class="p-6 bg-white rounded-lg shadow">
-          <h4 class="font-semibold">Matrix-transform cipher — interactive</h4>
-          <p class="mt-2 text-sm text-slate-600">A demo implementation of the paper flow: convert text→matrix, multiply with key matrix, LU decomposition, L⁻¹ * Const, small transform sequence, invertible output. This is an educational, reversible implementation (not intended as production crypto).</p>
-
-          <label class="block mt-4 text-sm">Plaintext (A-Z and space, short)</label>
-          <input id="matrix-msg" class="mt-2 w-full border rounded p-2" value="THE" />
-
-          <div class="mt-3 flex gap-3">
-            <button id="matrix-encrypt-btn" class="btn-primary">Encrypt (matrix)</button>
-            <button id="matrix-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
-          </div>
-
-          <div class="mt-4 text-sm">
-            <p class="font-semibold">Matrix (numeric)</p>
-            <div id="matrix-display" class="mt-2 font-mono text-sm bg-slate-50 p-3 rounded"></div>
-
-            <p class="font-semibold mt-3">Ciphertext (readable)</p>
-            <div id="matrix-ciphertext" class="mt-2 p-3 bg-black text-green-300 font-mono rounded"></div>
-          </div>
+        <div class="mt-4 text-sm space-y-3">
+          <div><div class="font-semibold">Public key (PEM)</div><textarea id="rsa-public-pem" class="w-full mt-1 p-2 h-28 mono" readonly></textarea></div>
+          <div><div class="font-semibold">Encrypted payload (base64)</div><textarea id="hybrid-payload" class="w-full mt-1 p-2 h-28 mono" readonly></textarea></div>
+          <div><div class="font-semibold">Decrypted text</div><div id="hybrid-plaintext" class="mt-1 p-2 bg-slate-50 rounded mono min-h-[36px]"></div></div>
         </div>
       </div>
-    </section>
 
-    <!-- FUTURE -->
-    <section id="future" class="mt-12">
-      <h3 class="text-2xl font-bold">The Bigger Picture: Future Frontiers</h3>
-      <div class="mt-6 grid md:grid-cols-4 gap-4">
-        <div class="p-4 bg-slate-800 text-white rounded">Homomorphic Encryption</div>
-        <div class="p-4 bg-slate-800 text-white rounded">Post-Quantum Cryptography</div>
-        <div class="p-4 bg-slate-800 text-white rounded">Adversarial AI</div>
-        <div class="p-4 bg-slate-800 text-white rounded">Ethical Governance</div>
+      <!-- Matrix Transform -->
+      <div class="card">
+        <h3 class="font-semibold">Matrix-transform cipher — educational demo</h3>
+        <p class="text-sm text-slate-600 mt-1">Plaintext → numeric matrix → multiply by key matrix A (mod p) → LU-style operations → reversible transform → ciphertext. Reversible educational demo only.</p>
+
+        <label class="mt-4 block text-sm">Plaintext (A–Z and space)</label>
+        <input id="matrix-msg" class="w-full mt-2 border rounded p-2" value="THE ALGO" />
+
+        <div class="mt-3 flex gap-3">
+          <button id="matrix-encrypt-btn" class="btn-primary">Encrypt (matrix)</button>
+          <button id="matrix-decrypt-btn" class="btn-outline" disabled>Decrypt</button>
+        </div>
+
+        <div class="mt-4 space-y-3 text-sm">
+          <div><div class="font-semibold">Matrix (numeric)</div><div id="matrix-display" class="mt-2 p-3 bg-slate-50 rounded mono min-h-[56px]"></div></div>
+          <div><div class="font-semibold">Ciphertext (readable)</div><div id="matrix-ciphertext" class="mt-2 p-3 bg-black text-green-300 mono rounded min-h-[40px]"></div></div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <footer class="mt-12 py-8 text-sm text-slate-500 text-center">
-      Interactive visualization based on the papers: "algoTRIC" and "Matrix and Transform cryptographic algorithm". For educational purposes.
-    </footer>
-  </main>
+  <!-- BENCHMARKS -->
+  <section id="bench" class="card">
+    <h2 class="text-2xl font-bold">Live Benchmarks — AES-only vs Hybrid (AES+RSA)</h2>
+    <p class="text-slate-600 mt-2">Run a lightweight benchmark in your browser. The script measures mean roundtrip times (ms) for AES-only and Hybrid flows and updates charts live.</p>
 
-  <!-- Modules + script -->
-  <script type="module" src="./js/script.js"></script>
+    <div class="mt-4 grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm">Payload sizes (bytes, comma separated)</label>
+        <input id="bench-sizes" class="w-full border rounded p-2 mt-2" value="1024,10240,102400,1048576" />
+      </div>
+      <div>
+        <label class="text-sm">Iterations per size</label>
+        <input id="bench-iters" class="w-full border rounded p-2 mt-2" value="3" />
+      </div>
+    </div>
+
+    <div class="mt-4 flex gap-3">
+      <button id="run-bench-btn" class="btn-primary">Run benchmark</button>
+      <button id="stop-bench-btn" class="btn-outline" disabled>Stop</button>
+      <div id="bench-status" class="ml-3 text-sm text-slate-600 self-center"></div>
+    </div>
+
+    <div class="mt-6 grid lg:grid-cols-3 gap-6">
+      <div class="p-4 bg-slate-50 rounded">
+        <div class="font-semibold">AES vs Hybrid (mean roundtrip time, ms)</div>
+        <div class="chart-wrap mt-3"><canvas id="chart-means"></canvas></div>
+      </div>
+      <div class="p-4 bg-slate-50 rounded">
+        <div class="font-semibold">Process RSS (approx, bytes)</div>
+        <div class="chart-wrap mt-3"><canvas id="chart-rss"></canvas></div>
+      </div>
+      <div class="p-4 bg-slate-50 rounded">
+        <div class="font-semibold">CPU proxy (ms)</div>
+        <div class="chart-wrap mt-3"><canvas id="chart-cpu"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUTURE -->
+  <section id="future" class="card">
+    <h2 class="text-2xl font-bold">Future work & research directions</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-4 text-sm text-slate-700">
+      <div>
+        <h4 class="font-semibold">Matrix transform math</h4>
+        <p class="text-slate-600 mt-1">Integrate a numerical approximation of the Gupta and Abaoub transforms (requires careful numeric integration / precision). Server-side implementation with Python/NumPy is recommended for heavy math.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold">Post-quantum & homomorphic</h4>
+        <p class="text-slate-600 mt-1">Explore lattice-based primitives, homomorphic schemes for privacy-preserving AI, and hybrid constructions that remain secure post-quantum.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="text-center text-xs text-slate-500 py-6">Interactive demonstration for the algoTRIC research. Educational only. Repo: <a href="https://github.com/DebdootManna/algoTRIC-prototype" target="_blank" rel="noopener" class="text-teal-600">github.com/DebdootManna/algoTRIC-prototype</a></footer>
+</main>
+
+<!-- Everything below is the JS: demos, crypto, matrix, benchmark, charts -->
+<script type="module">
+
+/* ----------------------
+   Utility: base64 / pem
+   ---------------------- */
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+function base64ToArrayBuffer(b64) {
+  const binary = atob(b64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i=0;i<len;i++) bytes[i]=binary.charCodeAt(i);
+  return bytes.buffer;
+}
+function formatPem(b64) {
+  return b64.match(/.{1,64}/g).join('\n');
+}
+function pemToBase64(pem) {
+  return pem.replace(/-----(BEGIN|END) (PUBLIC|PRIVATE) KEY-----/g,'').replace(/\s+/g,'');
+}
+
+/* ----------------------
+   RSA helpers (PEM)
+   ---------------------- */
+const RSA_ALGO = { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01,0x00,0x01]), hash: 'SHA-256' };
+
+async function generateKeypairPEM() {
+  const kp = await crypto.subtle.generateKey(RSA_ALGO, true, ['encrypt','decrypt']);
+  const spki = await crypto.subtle.exportKey('spki', kp.publicKey);
+  const pkcs8 = await crypto.subtle.exportKey('pkcs8', kp.privateKey);
+  const pubPem = `-----BEGIN PUBLIC KEY-----\n${formatPem(arrayBufferToBase64(spki))}\n-----END PUBLIC KEY-----`;
+  const privPem = `-----BEGIN PRIVATE KEY-----\n${formatPem(arrayBufferToBase64(pkcs8))}\n-----END PRIVATE KEY-----`;
+  return { publicPem: pubPem, privatePem: privPem, crypto: kp };
+}
+
+async function importPublicKeyFromPem(pem) {
+  const b64 = pemToBase64(pem);
+  const spki = base64ToArrayBuffer(b64);
+  return crypto.subtle.importKey('spki', spki, RSA_ALGO, true, ['encrypt']);
+}
+async function importPrivateKeyFromPem(pem) {
+  const b64 = pemToBase64(pem);
+  const pkcs8 = base64ToArrayBuffer(b64);
+  return crypto.subtle.importKey('pkcs8', pkcs8, RSA_ALGO, true, ['decrypt']);
+}
+
+/* ----------------------
+   AES helpers + Hybrid
+   ---------------------- */
+async function generateAesKey() {
+  return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt','decrypt']);
+}
+async function exportRawAesKey(key) { return crypto.subtle.exportKey('raw', key); }
+async function importRawAesKey(raw) { return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, true, ['encrypt','decrypt']); }
+
+async function aesEncryptWithKey(key, plaintext) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext));
+  return { iv: iv.buffer, ct };
+}
+async function aesDecryptWithKey(key, ivBuffer, ctBuffer) {
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(ivBuffer) }, key, ctBuffer);
+  return new TextDecoder().decode(plain);
+}
+
+// Hybrid: wrap AES raw bytes by encrypting with RSA-OAEP (encrypt raw with RSA public), package with iv+ct
+function concatArrayBuffers(...parts) {
+  const total = parts.reduce((s,p)=>s + p.byteLength, 0);
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const p of parts) { out.set(new Uint8Array(p), off); off += p.byteLength; }
+  return out.buffer;
+}
+async function hybridEncryptWithRSA(publicCryptoKey, plaintext) {
+  const aesKey = await generateAesKey();
+  const {iv, ct} = await aesEncryptWithKey(aesKey, plaintext);
+  const rawAes = await exportRawAesKey(aesKey); // ArrayBuffer
+  // wrap = RSA-OAEP encrypt rawAes
+  const wrapped = await crypto.subtle.encrypt({ name:'RSA-OAEP' }, publicCryptoKey, rawAes);
+  // pack: 4 byte len + wrapped + iv (12) + ct
+  const header = new Uint8Array(4);
+  new DataView(header.buffer).setUint32(0, wrapped.byteLength, false);
+  return concatArrayBuffers(header.buffer, wrapped, iv, ct);
+}
+async function hybridDecryptWithRSA(privateCryptoKey, payloadBuffer) {
+  const view = new DataView(payloadBuffer);
+  const wrappedLen = view.getUint32(0, false);
+  let offset = 4;
+  const wrapped = payloadBuffer.slice(offset, offset + wrappedLen); offset += wrappedLen;
+  const iv = payloadBuffer.slice(offset, offset+12); offset += 12;
+  const ct = payloadBuffer.slice(offset);
+  const rawAes = await crypto.subtle.decrypt({ name:'RSA-OAEP' }, privateCryptoKey, wrapped);
+  const aesKey = await importRawAesKey(rawAes);
+  const plain = await aesDecryptWithKey(aesKey, iv, ct);
+  return plain;
+}
+
+/* ----------------------
+   Matrix-transform educational implementation
+   ---------------------- */
+const CHAR_MAP = (() => {
+  const m = {}; const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+  for (let i=0;i<letters.length;i++) m[letters[i]] = i+1; return m;
+})();
+const REV_MAP = (() => {
+  const r = {}; const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+  for (let i=0;i<letters.length;i++) r[i+1]=letters[i]; return r;
+})();
+
+function textToMatrix(text, n=3) {
+  text = text.padEnd(n*n, ' ').slice(0, n*n).toUpperCase();
+  const arr = text.split('').map(ch => CHAR_MAP[ch] || 27);
+  const mat = [];
+  for (let i=0;i<n;i++) mat.push(arr.slice(i*n, i*n + n));
+  return mat;
+}
+function matrixToText(mat) {
+  return mat.flat().map(v => REV_MAP[v] || ' ').join('').trim();
+}
+function matMul(A,B,p) {
+  const n=A.length, m=B[0].length;
+  const R = Array.from({length:n}, ()=>Array.from({length:m}, ()=>0));
+  for (let i=0;i<n;i++) for (let j=0;j<m;j++){
+    let s=0;
+    for (let k=0;k<A[i].length;k++) s += A[i][k]*B[k][j];
+    R[i][j] = ((s % p) + p) % p;
+  }
+  return R;
+}
+function randInt(max){ return Math.floor(Math.random()*max); }
+function detRecursive(mat,p){
+  const n=mat.length;
+  if(n===1) return ((mat[0][0]%p)+p)%p;
+  let det=0;
+  for(let c=0;c<n;c++){
+    const sub = mat.slice(1).map(r => r.filter((_,i)=>i!==c));
+    det += ((c%2===0?1:-1) * mat[0][c] * detRecursive(sub,p));
+    det %= p;
+  }
+  return ((det%p)+p)%p;
+}
+function genKeyMatrix(n,p){
+  while(true){
+    const A = Array.from({length:n}, ()=>Array.from({length:n}, ()=>randInt(p)));
+    if(detRecursive(A,p) % p !== 0) return A;
+  }
+}
+// small Crout-style LU and helpers (assume invertible)
+function luDecomposeCrout(A,p){
+  const n=A.length;
+  const L=Array.from({length:n}, (_,i)=>Array.from({length:n}, (_,j)=>i===j?1:0));
+  const U=Array.from({length:n}, ()=>Array.from({length:n}, ()=>0));
+  for(let j=0;j<n;j++){
+    for(let i=0;i<=j;i++){
+      let s=0;
+      for(let k=0;k<i;k++) s+=L[i][k]*U[k][j];
+      U[i][j]=((A[i][j]-s)%p+p)%p;
+    }
+    for(let i=j+1;i<n;i++){
+      let s=0;
+      for(let k=0;k<j;k++) s+=L[i][k]*U[k][j];
+      const denom = U[j][j]; if(denom===0) throw new Error('zero pivot');
+      const inv = modInv(denom,p);
+      L[i][j] = ((A[i][j]-s)*inv)%p; L[i][j]=((L[i][j]%p)+p)%p;
+    }
+  }
+  return {L,U};
+}
+function egcd(a,b){ if(b===0) return {g:a,x:1,y:0}; const r=egcd(b, a%b); return {g:r.g,x:r.y,y:r.x - Math.floor(a/b)*r.y}; }
+function modInv(a,m){ const r=egcd(a,m); if(r.g!==1) throw new Error('no inv'); return ((r.x % m)+m)%m; }
+function invertLower(L,p){
+  const n=L.length; const X=Array.from({length:n}, ()=>Array.from({length:n}, ()=>0));
+  for(let col=0;col<n;col++){
+    const b = Array.from({length:n}, (_,i)=> i===col?1:0);
+    const y = Array(n).fill(0);
+    for(let i=0;i<n;i++){
+      let s=0; for(let k=0;k<i;k++) s+=L[i][k]*y[k];
+      y[i]=((b[i]-s)%p+p)%p;
+    }
+    for(let i=0;i<n;i++) X[i][col]=y[i];
+  }
+  return X;
+}
+// Forward transform: evaluate coefficients at small points -> returns s and vals
+function forwardTransform(B,p){
+  const n=B.length; const s = 3 + randInt(5);
+  const vals = [];
+  for(let col=0;col<n;col++){
+    const coeffs = B.map(r=>r[col]);
+    const out=[];
+    for(let pow=1; pow<=n; pow++){
+      let sum=0;
+      for(let k=0;k<n;k++) sum += coeffs[k]*Math.pow(s, pow+k);
+      out.push(((sum%p)+p)%p);
+    }
+    vals.push(out);
+  }
+  return {s, vals};
+}
+function solveLinearMod(A,b,p){
+  const n=A.length;
+  const M = A.map((row,i) => row.map(x=>((x%p)+p)%p).concat([((b[i]%p)+p)%p]));
+  for (let i=0;i<n;i++){
+    let pivot=i;
+    for(let r=i;r<n;r++) if(M[r][i]!==0){ pivot=r; break; }
+    if(M[pivot][i]===0) throw new Error('singular');
+    if(pivot!==i){ const t=M[i]; M[i]=M[pivot]; M[pivot]=t; }
+    const inv = modInv(M[i][i], p);
+    for(let c=i;c<=n;c++) M[i][c] = (M[i][c]*inv)%p;
+    for(let r=i+1;r<n;r++){
+      const factor = M[r][i];
+      for(let c=i;c<=n;c++) M[r][c] = ((M[r][c] - factor*M[i][c])%p + p)%p;
+    }
+  }
+  const x=Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    let s=M[i][n];
+    for(let c=i+1;c<n;c++) s = ((s - M[i][c]*x[c])%p + p)%p;
+    x[i]=s;
+  }
+  return x;
+}
+function inverseTransform(vals,s,p){
+  const n = vals.length;
+  const coeffsByCol = [];
+  for(let col=0; col<n; col++){
+    const rhs = vals[col];
+    const M = Array.from({length:n}, (_,r)=>Array.from({length:n}, (_,k)=> Math.pow(s, r + k + 1) % p));
+    const coeffs = solveLinearMod(M, rhs, p);
+    coeffsByCol.push(coeffs);
+  }
+  const B = Array.from({length:n}, ()=>Array.from({length:n}, ()=>0));
+  for(let col=0;col<n;col++) for(let row=0;row<n;row++) B[row][col] = ((coeffsByCol[col][row]%p)+p)%p;
+  return B;
+}
+
+// Public API for matrix demo
+function matrixToHtml(M){
+  return '<table class="mono border-collapse"><tbody>' + M.map(row=>'<tr>'+row.map(v=>`<td class="px-2 py-1 border">${v}</td>`).join('')+'</tr>').join('') + '</tbody></table>';
+}
+function encryptMatrixMessage(plaintext){
+  const n=3; const P=37;
+  const M = textToMatrix(plaintext, n);
+  const A = genKeyMatrix(n, P);
+  const Cons = matMul(A, M, P);
+  const LU = luDecomposeCrout(A, P);
+  const Linv = invertLower(LU.L, P);
+  const B = matMul(Linv, Cons, P);
+  const ft = forwardTransform(B, P);
+  const pkg = {n,P,A, L: LU.L, U:LU.U, s:ft.s, vals:ft.vals};
+  const cipherString = btoa(JSON.stringify({meta:{n,P,s:ft.s}, vals: ft.vals}));
+  return {matrix: M, package: pkg, ciphertext: cipherString};
+}
+function decryptMatrixPackage(pkg){
+  const {n,P,A,L,U,s,vals} = pkg;
+  const B = inverseTransform(vals, s, P);
+  const Cons = matMul(L, B, P);
+  const M = Array.from({length:n}, ()=>Array.from({length:n}, ()=>0));
+  for(let col=0; col<n; col++){
+    const rhs = Cons.map(r => r[col]);
+    const sol = solveLinearMod(A, rhs, P);
+    for(let row=0; row<n; row++) M[row][col] = ((sol[row]%P)+P)%P;
+  }
+  const plaintext = matrixToText(M);
+  return {matrix: M, plaintext};
+}
+
+/* ----------------------
+   Benchmark & charts
+   ---------------------- */
+// Chart objects
+let chartMeans=null, chartRSS=null, chartCPU=null;
+function initCharts(){
+  const ctx1 = document.getElementById('chart-means').getContext('2d');
+  chartMeans = new Chart(ctx1, {
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'AES-only (ms)', data:[], borderColor:'rgba(13,148,136,0.9)', fill:false},
+      {label:'Hybrid AES+RSA (ms)', data:[], borderColor:'rgba(59,130,246,0.9)', fill:false}
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true}}}
+  });
+  const ctx2 = document.getElementById('chart-rss').getContext('2d');
+  chartRSS = new Chart(ctx2, {
+    type:'line',
+    data:{labels:[],datasets:[{label:'RSS proxy (bytes)', data:[], borderColor:'rgba(234,88,12,0.9)'}]},
+    options:{responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true}}}
+  });
+  const ctx3 = document.getElementById('chart-cpu').getContext('2d');
+  chartCPU = new Chart(ctx3, {
+    type:'line',
+    data:{labels:[],datasets:[{label:'CPU proxy (ms)', data:[], borderColor:'rgba(120,74,255,0.9)'}]},
+    options:{responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true}}}
+  });
+}
+
+function updateCharts(results){
+  const labels = results.sizes.map(s=>s.toLocaleString());
+  chartMeans.data.labels = labels;
+  chartMeans.data.datasets[0].data = results.aesMeans.map(v => +(v||0).toFixed(3));
+  chartMeans.data.datasets[1].data = results.hybridMeans.map(v => +(v||0).toFixed(3));
+  chartMeans.update();
+
+  chartRSS.data.labels = labels;
+  chartRSS.data.datasets[0].data = results.rssMeans.map(v => Math.round(v||0));
+  chartRSS.update();
+
+  chartCPU.data.labels = labels;
+  chartCPU.data.datasets[0].data = results.cpuMeans.map(v => +(v||0).toFixed(3));
+  chartCPU.update();
+}
+
+// Benchmark runner (non-blocking)
+let benchStopRequested = false;
+async function runBenchmark(sizes=[1024,10240,102400], iters=3, onPartial=null){
+  // create RSA once for hybrid
+  const rsaKp = await crypto.subtle.generateKey(RSA_ALGO, true, ['encrypt','decrypt']);
+  const pub = rsaKp.publicKey, priv = rsaKp.privateKey;
+  const results = { sizes: [], aesMeans: [], hybridMeans: [], cpuMeans: [], rssMeans: [] };
+
+  for (const s of sizes) {
+    if (benchStopRequested) break;
+    const aesTimes = [], hyTimes = [], cpuSamples = [], rssSamples = [];
+    for (let i=0;i<iters;i++){
+      if (benchStopRequested) break;
+      // yield a tick to keep UI responsive
+      await new Promise(r => setTimeout(r, 8));
+      const payload = crypto.getRandomValues(new Uint8Array(s));
+      // AES-only
+      const t0 = performance.now();
+      // AES roundtrip: ephemeral key encrypt & decrypt
+      const aesKey = await generateAesKey();
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, aesKey, payload);
+      await crypto.subtle.decrypt({name:'AES-GCM', iv}, aesKey, ct);
+      const t1 = performance.now();
+      aesTimes.push(t1 - t0);
+
+      // Hybrid
+      const th0 = performance.now();
+      // AES encrypt + encrypt raw key with RSA
+      const aesKey2 = await generateAesKey();
+      const iv2 = crypto.getRandomValues(new Uint8Array(12));
+      const ct2 = await crypto.subtle.encrypt({name:'AES-GCM', iv:iv2}, aesKey2, payload);
+      const raw = await exportRawAesKey(aesKey2);
+      const wrapped = await crypto.subtle.encrypt({name:'RSA-OAEP'}, pub, raw);
+      // unwrap -> decrypt
+      const rawUn = await crypto.subtle.decrypt({name:'RSA-OAEP'}, priv, wrapped);
+      const aesKey3 = await importRawAesKey(rawUn);
+      await crypto.subtle.decrypt({name:'AES-GCM', iv:iv2}, aesKey3, ct2);
+      const th1 = performance.now();
+      hyTimes.push(th1 - th0);
+
+      // proxies
+      cpuSamples.push(( (aesTimes[aesTimes.length-1] + hyTimes[hyTimes.length-1]) / 2 ));
+      if ('memory' in performance) {
+        try { rssSamples.push(performance.memory.usedJSHeapSize || 0); } catch(e){ rssSamples.push(0); }
+      } else rssSamples.push(0);
+
+      // partial update
+      if (onPartial) {
+        onPartial({
+          sizes: [...results.sizes, s],
+          aesMeans: [...results.aesMeans, average(aesTimes)],
+          hybridMeans: [...results.hybridMeans, average(hyTimes)],
+          cpuMeans: [...results.cpuMeans, average(cpuSamples)],
+          rssMeans: [...results.rssMeans, average(rssSamples)]
+        });
+      }
+    }
+    results.sizes.push(s);
+    results.aesMeans.push(average(aesTimes));
+    results.hybridMeans.push(average(hyTimes));
+    results.cpuMeans.push(average(cpuSamples));
+    results.rssMeans.push(average(rssSamples));
+  }
+  return results;
+}
+function average(arr){ return arr.length? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+
+/* ----------------------
+   Wire UI handlers
+   ---------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  // init charts
+  initCharts();
+
+  // AES RSA demo
+  const genBtn = document.getElementById('generate-keys-btn');
+  const encBtn = document.getElementById('hybrid-encrypt-btn');
+  const decBtn = document.getElementById('hybrid-decrypt-btn');
+  const pubArea = document.getElementById('rsa-public-pem');
+  const payloadArea = document.getElementById('hybrid-payload');
+  const plainOut = document.getElementById('hybrid-plaintext');
+  const inputMsg = document.getElementById('hybrid-msg');
+
+  let rsaPemPair = null, rsaCryptoPair = null;
+
+  genBtn.addEventListener('click', async () => {
+    genBtn.disabled = true; genBtn.textContent = 'Generating...';
+    try {
+      const kp = await generateKeypairPEM();
+      rsaPemPair = { publicPem: kp.publicPem, privatePem: kp.privatePem };
+      rsaCryptoPair = kp.crypto;
+      pubArea.value = rsaPemPair.publicPem;
+      encBtn.disabled = false;
+      genBtn.textContent = 'Generated';
+    } catch (e) {
+      alert('Key generation failed: ' + e);
+      genBtn.textContent = 'Generate RSA keypair';
+    }
+    genBtn.disabled = false;
+  });
+
+  encBtn.addEventListener('click', async () => {
+    encBtn.disabled = true;
+    try {
+      if (!rsaCryptoPair) { alert('Generate keys first'); encBtn.disabled=false; return; }
+      const pub = await importPublicKeyFromPem(rsaPemPair.publicPem);
+      const payloadBuf = await hybridEncryptWithRSA(pub, inputMsg.value || '');
+      const b64 = arrayBufferToBase64(payloadBuf);
+      payloadArea.value = b64;
+      decBtn.disabled = false;
+    } catch (e) { alert('Encrypt error: ' + e); }
+    encBtn.disabled = false;
+  });
+
+  decBtn.addEventListener('click', async () => {
+    decBtn.disabled = true;
+    try {
+      const priv = await importPrivateKeyFromPem(rsaPemPair.privatePem);
+      const buf = base64ToArrayBuffer(payloadArea.value);
+      const plain = await hybridDecryptWithRSA(priv, buf);
+      plainOut.textContent = plain;
+    } catch (e) { alert('Decrypt error: ' + e); }
+    decBtn.disabled = false;
+  });
+
+  // Matrix demo
+  const mEncBtn = document.getElementById('matrix-encrypt-btn');
+  const mDecBtn = document.getElementById('matrix-decrypt-btn');
+  const mDisplay = document.getElementById('matrix-display');
+  const mCipher = document.getElementById('matrix-ciphertext');
+  const mInput = document.getElementById('matrix-msg');
+  let lastMatrixPackage = null;
+
+  mEncBtn.addEventListener('click', () => {
+    try {
+      const out = encryptMatrixMessage(mInput.value || '');
+      mDisplay.innerHTML = matrixToHtml(out.matrix);
+      mCipher.textContent = out.ciphertext;
+      lastMatrixPackage = out.package;
+      mDecBtn.disabled = false;
+    } catch (e) {
+      alert('Matrix encrypt error: ' + e);
+    }
+  });
+  mDecBtn.addEventListener('click', () => {
+    try {
+      if(!lastMatrixPackage) return;
+      const rec = decryptMatrixPackage(lastMatrixPackage);
+      mDisplay.innerHTML = matrixToHtml(rec.matrix);
+      mCipher.textContent = rec.plaintext;
+    } catch (e) {
+      alert('Matrix decrypt error: ' + e);
+    }
+  });
+
+  // Benchmark wiring
+  const runBtn = document.getElementById('run-bench-btn');
+  const stopBtn = document.getElementById('stop-bench-btn');
+  const sizesInput = document.getElementById('bench-sizes');
+  const itersInput = document.getElementById('bench-iters');
+  const status = document.getElementById('bench-status');
+
+  runBtn.addEventListener('click', async () => {
+    benchStopRequested = false;
+    runBtn.disabled = true; stopBtn.disabled = false; status.textContent = 'Benchmark running...';
+    const sizes = sizesInput.value.split(',').map(s=>parseInt(s.trim())).filter(Boolean);
+    const iters = Math.max(1, parseInt(itersInput.value) || 1);
+    try {
+      const results = await runBenchmark(sizes, iters, (partial) => {
+        // partial updates
+        updateCharts(partial);
+      });
+      updateCharts(results);
+      status.textContent = 'Benchmark completed';
+    } catch (e) {
+      console.error(e);
+      alert('Benchmark error: ' + e);
+      status.textContent = 'Error';
+    } finally {
+      runBtn.disabled = false; stopBtn.disabled = true;
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    benchStopRequested = true;
+    stopBtn.disabled = true; status.textContent = 'Stop requested — finishing current iteration...';
+  });
+
+}); // DOMContentLoaded end
+
+</script>
 </body>
 </html>
